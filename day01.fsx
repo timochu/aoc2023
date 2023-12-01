@@ -1,4 +1,5 @@
-let input = System.IO.File.ReadAllLines "inputs/day01.txt"
+open System
+let input = IO.File.ReadAllLines "inputs/day01.txt"
 
 let solver input =
     let rec foo acc (input : string) =
@@ -12,10 +13,10 @@ let solver input =
         | 's'::'e'::'v'::'e'::'n'::_ -> foo $"{acc}7" input[1..]
         | 'e'::'i'::'g'::'h'::'t'::_ -> foo $"{acc}8" input[1..]
         | 'n'::'i'::'n'::'e'::_      -> foo $"{acc}9" input[1..]
-        | c::_ when System.Char.IsDigit c -> foo $"{acc}{c}" input[1..]
-        | _::_ -> foo acc input[1..]
-        | _ -> acc
+        | c::_ when Char.IsDigit c   -> foo $"{acc}{c}" input[1..]
+        | _::_                       -> foo acc input[1..]
+        | _                          -> acc
     input |> foo "" |> (fun c -> $"{Seq.head c}{Seq.last c}") |> int
 
-printfn "Part 1: %i" (input |> Array.sumBy (Seq.filter System.Char.IsDigit >> (fun c -> $"{Seq.head c}{Seq.last c}") >> int))
+printfn "Part 1: %i" (input |> Array.sumBy (Seq.filter Char.IsDigit >> (fun c -> $"{Seq.head c}{Seq.last c}") >> int))
 printfn "Part 2: %i" (input |> Array.sumBy solver)
