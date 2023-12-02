@@ -14,4 +14,4 @@ games
 |> Array.sumBy (fun (id,_,_,_) -> id) |> printfn "Part 1: %A"
 
 games 
-|> Array.map (fun (_,r,g,b) -> Array.max r * Array.max g * Array.max b) |> Array.sum |> printfn "Part 2: %A"
+|> Array.sumBy (fun (_,r,g,b) -> Array.max r * Array.max g * Array.max b) |> printfn "Part 2: %A"
