@@ -1,4 +1,3 @@
-#time
 open System
 let toGame (line : string) =
     let items = line.Split([| ": "; ", "; "; " |], StringSplitOptions.RemoveEmptyEntries)
