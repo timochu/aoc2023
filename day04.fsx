@@ -7,7 +7,7 @@ let cards =
 let rec solver total =
     function
     | [] -> total
-    | (count, head)::tail -> solver (total + count) ((tail.[..head-1] |> List.map (fun (n,c) -> n+count, c)) @ tail.[head..])
+    | (count, head)::tail -> solver (total + count) ([for (n, c) in tail.[..head-1] -> (n + count, c)] @ tail.[head..])
 
 cards |> List.sumBy (fun (_, count) -> pown 2 (count - 1)) |> printfn "Part 1: %i"
 cards |> solver 0 |> printfn "Part 2: %i"
