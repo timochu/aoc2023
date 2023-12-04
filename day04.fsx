@@ -1,18 +1,13 @@
-open System ; open type StringSplitOptions
-let input = IO.File.ReadAllLines "inputs/day04.txt"
+open System; open type StringSplitOptions
 
 let cards = 
-    input |> Array.map (
-        _.Split([|" "|], RemoveEmptyEntries ||| TrimEntries)
-        >> Array.skip 2
-        >> Array.splitAt 10
-        >> fun (x,y) -> Set x |> Set.intersect (Set y)
-        >> Set.count)
+    [for line in IO.File.ReadAllLines "inputs/day04.txt" ->
+        1, line[10..].Split(' ', RemoveEmptyEntries) |> fun (nr) -> Set.intersect (Set nr[..9]) (Set nr[10..]) |> Set.count]
 
-let rec solver acc =
+let rec solver total =
     function
-    | [] -> acc
-    | (c, h)::t -> solver (acc + c) ((t.[..h-1] |> List.map (fun (n,x) -> n+c,x)) @ t.[h..])
+    | [] -> total
+    | (count, head)::tail -> solver (total + count) ((tail.[..head-1] |> List.map (fun (n,c) -> n+count, c)) @ tail.[head..])
 
-cards |> Array.map (function 0 -> 0 | 1 -> 1 | n -> 1 <<< (n - 1)) |> Array.sum |> printfn "Part 1: %i"
-solver 0 (cards |> Array.map (fun c -> 1,c) |> Array.toList) |> printfn "Part 2: %i"
+cards |> List.sumBy (fun (_, count) -> pown 2 (count - 1)) |> printfn "Part 1: %i"
+cards |> solver 0 |> printfn "Part 2: %i"
