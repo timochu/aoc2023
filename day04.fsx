@@ -2,7 +2,7 @@ open System; open type StringSplitOptions
 
 let cards = 
     [for line in IO.File.ReadAllLines "inputs/day04.txt" ->
-        1, line[10..].Split(' ', RemoveEmptyEntries) |> fun (nr) -> Set.intersect (Set nr[..9]) (Set nr[10..]) |> Set.count]
+        1, line[10..].Split(' ', RemoveEmptyEntries) |> fun nr -> Set.intersect (Set nr[..9]) (Set nr[10..]) |> Set.count]
 
 let rec solver total =
     function
