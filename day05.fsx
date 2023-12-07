@@ -7,7 +7,7 @@ let maps = input |> Array.tail |> Array.map (_.Split("\r\n") >> Array.skip 1 >> 
 let rec mapper seed =
     function
     | [] -> seed
-    | (destination, source, range)::t when seed >= source && seed < source + range -> destination + seed - source 
+    | (destination, source, range)::_ when seed >= source && seed < source + range -> destination + seed - source 
     | _::t -> mapper seed t
 
 seeds |> Array.map(fun seed -> maps |> Array.fold mapper seed) |> Array.min |> (printfn "Part 1: %i")
