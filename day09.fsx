@@ -5,5 +5,5 @@ let rec solve (accumulator : int list list) =
     | s when s |> List.forall ((=) 0) -> accumulator @ [s] |> List.sumBy List.last
     | s                               -> solve (accumulator @ [s])
 
-sequences |> List.sumBy (fun sequence -> solve [sequence]) |> printfn "Part 1: %i"
+sequences |> List.sumBy (fun sequence -> solve [sequence])          |> printfn "Part 1: %i"
 sequences |> List.sumBy (fun sequence -> solve [List.rev sequence]) |> printfn "Part 2: %i"
