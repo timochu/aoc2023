@@ -8,4 +8,4 @@ let rec differences (sequences : int list list) =
     | s -> differences (sequences @ [s])
 
 printfn "Part 1: %A" (sequences |> List.sumBy (fun x -> differences [x] |> List.map List.last |> List.sum))
-printfn "Part 2: %A" (sequences |> List.sumBy (fun x -> differences [x |> List.rev] |> List.map List.last |> List.sum))
+printfn "Part 2: %A" (sequences |> List.sumBy (fun x -> differences [List.rev x] |> List.map List.last |> List.sum))
