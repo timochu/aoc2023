@@ -1,7 +1,6 @@
 let input =
     System.IO.File.ReadAllLines "inputs/day11.txt"
-    |> Array.map _.ToCharArray()
-    |> Array.mapi (fun y row -> row |> Array.mapi (fun x item -> x, y, item))
+    |> Array.mapi (fun y row -> row.ToCharArray() |> Array.mapi (fun x item -> x, y, item))
     |> Array.collect id
 
 let empties f =
@@ -20,8 +19,8 @@ let rec combinations n l =
     | k, (x :: xs) -> List.map ((@) [ x ]) (combinations (k - 1) xs) @ combinations k xs
 
 let distance emptyCost ((x1, y1, _), (x2, y2, _)) =
-    [ [ for x in (min x1 x2) + 1 .. (max x1 x2) -> if cols |> Array.contains x then emptyCost else 1UL ]
-      [ for y in (min y1 y2) + 1 .. (max y1 y2) -> if rows |> Array.contains y then emptyCost else 1UL ] ]
+    [ [ for x in (min x1 x2) + 1 .. (max x1 x2) -> if Array.contains x cols then emptyCost else 1UL ]
+      [ for y in (min y1 y2) + 1 .. (max y1 y2) -> if Array.contains y rows then emptyCost else 1UL ] ]
     |> List.collect id
     |> List.sum
 
