@@ -6,8 +6,8 @@ let input =
 let empties f =
     input
     |> f
-    |> Array.filter (fun (_, row) -> row |> Array.forall (fun (_, _, o) -> o = '.'))
-    |> Array.map (fun (key, _) -> key)
+    |> Array.filter (snd >> Array.forall (fun (_, _, o) -> o = '.'))
+    |> Array.map fst
 
 let rows = Array.groupBy (fun (_, y, _) -> y) |> empties
 let cols = Array.groupBy (fun (x, _, _) -> x) |> empties
