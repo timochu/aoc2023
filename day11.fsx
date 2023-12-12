@@ -3,9 +3,9 @@ let input =
     |> Array.mapi (fun y row -> row.ToCharArray() |> Array.mapi (fun x item -> x, y, item))
     |> Array.collect id
 
-let empties f = input |> f |> Array.filter (snd >> Array.forall (fun (_, _, o) -> o = '.')) |> Array.map fst
-let rows = Array.groupBy (fun (_, y, _) -> y) |> empties |> Set
-let cols = Array.groupBy (fun (x, _, _) -> x) |> empties |> Set
+let empties f = input |> f |> Array.filter (snd >> Array.forall (fun (_, _, o) -> o = '.')) |> Array.map fst |> Set
+let rows = Array.groupBy (fun (_, y, _) -> y) |> empties
+let cols = Array.groupBy (fun (x, _, _) -> x) |> empties
 
 let combinations (p: 'a array) =
     [ for i in 0 .. p.Length-1 do
@@ -20,5 +20,5 @@ let distance emptyCost ((x1, y1, _), (x2, y2, _)) =
 
 let galaxies = input |> Array.filter (fun (_, _, c) -> c = '#') |> combinations
 
-galaxies |> List.map (distance 2UL) |> List.sum |> printfn "Part 1: %A"
-galaxies |> List.map (distance 1000000UL) |> List.sum |> printfn "Part 2: %A"
+galaxies |> List.map (distance 2UL) |> List.sum |> printfn "Part 1: %i"
+galaxies |> List.map (distance 1000000UL) |> List.sum |> printfn "Part 2: %i"
