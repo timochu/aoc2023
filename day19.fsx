@@ -8,6 +8,7 @@ type Workflow =
     | Verdict of Verdict
 
 let split (separators : string) (str : string) = str.Split(separators.ToCharArray(), RemoveEmptyEntries)
+
 let rec toWorkflow = function
     | "A" -> Verdict Accept
     | "R" -> Verdict Reject
