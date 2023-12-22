@@ -21,9 +21,9 @@ let workflows, items = IO.File.ReadAllText "inputs/day19.txt" |> _.Split("\r\n\r
 let rec solve workflow (item : Map<char,int>) = 
     match workflow with
     | Comparison (c, (><), value, Verdict v) :: _ when item[c] >< value       -> v
-    | Comparison (c, (><), value, Destination dst) :: _ when item[c] >< value -> solve (workflows[dst]) item
+    | Comparison (c, (><), value, Destination dst) :: _ when item[c] >< value -> solve workflows[dst] item
     | Comparison _ :: remaining                                               -> solve remaining item
-    | Destination next :: _                                                   -> solve (workflows[next]) item
+    | Destination next :: _                                                   -> solve workflows[next] item
     | Verdict v :: _                                                          -> v
 
 items |> Array.sumBy (fun i ->
