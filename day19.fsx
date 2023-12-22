@@ -18,8 +18,7 @@ let rec toWorkflow = function
 
 let workflows = 
     input.[0]
-    |> Array.map _.Split([|'{';'}';','|], RemoveEmptyEntries)
-    |> Array.map (fun (line) -> line[0], [ for step in line[1..] -> toWorkflow step ])
+    |> Array.map (_.Split([|'{';'}';','|], RemoveEmptyEntries) >> fun (line) -> line[0], [ for step in line[1..] -> toWorkflow step ])
     |> Map
 
 let items = input.[1] |> Array.map (
