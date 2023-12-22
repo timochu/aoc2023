@@ -7,8 +7,6 @@ type Workflow =
     | Destination of string
     | Verdict of Verdict
 
-let input = IO.File.ReadAllText "inputs/day19.txt" |> _.Split("\r\n\r\n") |> Array.map _.Split("\r\n")
-
 let rec toWorkflow = function
     | "A" -> Verdict Accept
     | "R" -> Verdict Reject
@@ -16,16 +14,9 @@ let rec toWorkflow = function
     | step when step[1] = '<' -> step.Split ':' |> fun x -> Comparison (step[0], (<), int (x[0][2..]), toWorkflow x[1])
     | dst -> Destination dst
 
-let workflows = 
-    input.[0]
-    |> Array.map (_.Split([|'{';'}';','|], RemoveEmptyEntries) >> fun (line) -> line[0], [ for step in line[1..] -> toWorkflow step ])
-    |> Map
-
-let items = input.[1] |> Array.map (
-    _.Split([|'{';'}';'=';','|], RemoveEmptyEntries) 
-    >> Array.chunkBySize 2
-    >> Array.map (fun line -> line[0][0], int line[1])
-    >> Map)
+let workflows,items = IO.File.ReadAllText "inputs/day19.txt" |> _.Split("\r\n\r\n") |> Array.map _.Split("\r\n") |> fun x -> 
+    x.[0] |> Array.map (_.Split([|'{';'}';','|], RemoveEmptyEntries) >> fun x -> x[0], [ for step in x[1..] -> toWorkflow step ]) |> Map,
+    x.[1] |> Array.map (_.Split([|'{';'}';'=';','|], RemoveEmptyEntries)  >> Array.chunkBySize 2 >> Array.map (fun x -> x[0][0], int x[1]) >> Map)
 
 let rec solve workflow (item : Map<char,int>) = 
     match workflow with
