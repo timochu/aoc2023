@@ -7,8 +7,6 @@ type Workflow =
     | Destination of string
     | Verdict of Verdict
 
-let split (separators : string) (str : string) = str.Split(separators.ToCharArray(), RemoveEmptyEntries)
-
 let rec toWorkflow = function
     | "A" -> Verdict Accept
     | "R" -> Verdict Reject
@@ -17,8 +15,8 @@ let rec toWorkflow = function
     | dst -> Destination dst
 
 let workflows, items = IO.File.ReadAllText "inputs/day19.txt" |> _.Split("\r\n\r\n") |> Array.map _.Split("\r\n") |> fun x -> 
-    x.[0] |> Array.map (split "{}," >> fun x -> x[0], [ for step in x[1..] -> toWorkflow step ]) |> Map,
-    x.[1] |> Array.map (split "{}=," >> Array.chunkBySize 2 >> Array.map (fun x -> x[0][0], int x[1]) >> Map)
+    x.[0] |> Array.map (_.Split("{},".ToCharArray(), RemoveEmptyEntries) >> fun x -> x[0], [ for step in x[1..] -> toWorkflow step ]) |> Map,
+    x.[1] |> Array.map (_.Split("{}=,".ToCharArray(), RemoveEmptyEntries) >> Array.chunkBySize 2 >> Array.map (fun x -> x[0][0], int x[1]) >> Map)
 
 let rec solve workflow (item : Map<char,int>) = 
     match workflow with
