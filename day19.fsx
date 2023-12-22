@@ -1,53 +1,48 @@
 open System
 
 type Verdict = Accept | Reject
-type ComparisonResult = Dst of string | Verdict of Verdict
+
 type Workflow = 
-    | Comparison of char * (IComparable -> IComparable -> bool) * int * (string)
+    | Comparison of char * (IComparable -> IComparable -> bool) * int * Workflow
     | Destination of string
     | Verdict of Verdict
 
 let input = IO.File.ReadAllText "inputs/day19.txt" |> _.Split("\r\n\r\n") |> Array.map _.Split("\r\n")
 
-let toWorkflow =
-    function
+let rec toWorkflow = function
     | "A" -> Verdict Accept
     | "R" -> Verdict Reject
     | s when s.Contains(':') -> 
         let tmp = s.Split(':')
-        let comparator = if s[1] = '>' then (>) else (<)
-        Comparison (s[0], comparator, int (tmp[0][2..]), tmp[1] )
+        Comparison (s[0], (if s[1] = '>' then (>) else (<)), int (tmp[0][2..]), tmp[1] |> toWorkflow)
     | s -> Destination s
 
 let workflows = 
-    input 
-    |> Array.head 
+    input.[0]
     |> Array.map _.Split([|"{";"}";","|], StringSplitOptions.RemoveEmptyEntries)
     |> Array.map (fun line -> line.[0], line.[1..] |> Array.map toWorkflow |> Array.toList)
     |> Map
 
 let items = 
-    input[1] 
-    |> Array.map (_.Split([|"{";"}";"=";","|], StringSplitOptions.RemoveEmptyEntries) 
+    input.[1]
+    |> Array.map (
+        _.Split([|"{";"}";"=";","|], StringSplitOptions.RemoveEmptyEntries) 
         >> Array.chunkBySize 2 
         >> Array.map (fun x -> x[0][0], int x[1])
         >> Map)
 
+let solver =
+    let rec solve workflow (item : Map<char,int>) = 
+        match workflow with
+        | Comparison (c, comparator, value, Verdict v) :: _ when comparator item.[c] value       -> v
+        | Comparison (c, comparator, value, Destination dst) :: _ when comparator item.[c] value -> solve (workflows.[dst]) item
+        | Comparison _ :: remaining                                                              -> solve remaining item
+        | Destination next :: _                                                                  -> solve (workflows |> Map.find next) item
+        | Verdict v :: _                                                                         -> v
+    solve workflows.["in"]
 
-let rec solve (workflow::remaining) item = 
-    match workflow with
-    | Comparison (c, comparator, value, next) when comparator (Map.find c item) value ->
-        match next with
-        | "A" -> Accept
-        | "R" -> Reject
-        | next          -> solve (workflows |> Map.find next) item
-    | Comparison _      -> solve remaining item
-    | Destination next  -> solve (workflows |> Map.find next) item
-    | Verdict verdict   -> verdict
-
-items |> Array.choose (fun i -> 
-    match solve (workflows |> Map.find "in") i with
-    | Accept -> Some (Seq.sum (i.Values))
-    | Reject -> None)
-    |> Array.sum
+items |> Array.sumBy (fun i -> 
+    match solver i with
+    | Accept -> Seq.sum (i.Values)
+    | Reject -> 0)
     |> printfn "Part 1: %i"
