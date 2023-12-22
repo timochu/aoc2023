@@ -14,17 +14,17 @@ let rec toWorkflow = function
     | step when step[1] = '<' -> step.Split ':' |> fun x -> Comparison (step[0], (<), int (x[0][2..]), toWorkflow x[1])
     | dst -> Destination dst
 
-let workflows,items = IO.File.ReadAllText "inputs/day19.txt" |> _.Split("\r\n\r\n") |> Array.map _.Split("\r\n") |> fun x -> 
+let workflows, items = IO.File.ReadAllText "inputs/day19.txt" |> _.Split("\r\n\r\n") |> Array.map _.Split("\r\n") |> fun x -> 
     x.[0] |> Array.map (_.Split([|'{';'}';','|], RemoveEmptyEntries) >> fun x -> x[0], [ for step in x[1..] -> toWorkflow step ]) |> Map,
     x.[1] |> Array.map (_.Split([|'{';'}';'=';','|], RemoveEmptyEntries)  >> Array.chunkBySize 2 >> Array.map (fun x -> x[0][0], int x[1]) >> Map)
 
 let rec solve workflow (item : Map<char,int>) = 
     match workflow with
-    | Comparison (c, comparator, value, Verdict v) :: _ when comparator item[c] value       -> v
-    | Comparison (c, comparator, value, Destination dst) :: _ when comparator item[c] value -> solve (workflows[dst]) item
-    | Comparison _ :: remaining                                                             -> solve remaining item
-    | Destination next :: _                                                                 -> solve (workflows[next]) item
-    | Verdict v :: _                                                                        -> v
+    | Comparison (c, (><), value, Verdict v) :: _ when  item[c] >< value      -> v
+    | Comparison (c, (><), value, Destination dst) :: _ when item[c] >< value -> solve (workflows[dst]) item
+    | Comparison _ :: remaining                                               -> solve remaining item
+    | Destination next :: _                                                   -> solve (workflows[next]) item
+    | Verdict v :: _                                                          -> v
 
 items |> Array.sumBy (fun i ->
     match solve workflows["in"] i with
